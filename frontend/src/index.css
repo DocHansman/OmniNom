@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+/* ----------------------------------------------------
+   DESIGN SYSTEM VARIABLES (Warm Amber & Earth Tones)
+   ---------------------------------------------------- */
+
+:root {
+  /* Colors */
+  --color-primary: #C17C3A;         /* Warm Amber */
+  --color-primary-hover: #A56529;   /* Deeper Amber */
+  --color-primary-light: #F8EFE3;   /* Light Creamy Amber tint */
+  --color-background: #FBF9F6;      /* Off-White Sand */
+  --color-surface: #FFFFFF;         /* White */
+  --color-on-surface: #3D2B1A;      /* Rich Dark Brown */
+  --color-on-surface-muted: #7A6959;/* Muted Earthy Brown */
+  --color-secondary: #7A5C3F;       /* Mid Earth Brown */
+  --color-muted: #F3EFE9;           /* Soft Sand Gray */
+  --color-border: #EAE3D8;          /* Light Clay Border */
+  --color-card: #FFFFFF;
+  --color-on-card: #3D2B1A;
+  
+  --color-success: #3A7D44;         /* Forest Green */
+  --color-error: #B83A3A;           /* Earthy Terracotta Red */
+  --color-warning: #D9A036;         /* Mustard Yellow */
+  
+  /* Layout */
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
+
+/* Dark Mode Theme Mapping */
+.dark {
+  --color-primary: #DC934D;         /* Brightened Amber for contrast */
+  --color-primary-hover: #F2A961;
+  --color-primary-light: #2D2012;   /* Dark Caramel */
+  --color-background: #110B06;      /* Near Black Coffee */
+  --color-surface: #1B120B;         /* Dark Roasted Cocoa */
+  --color-on-surface: #F5EFEB;      /* Almond Cream White */
+  --color-on-surface-muted: #B8A89A;/* Soft Ash Taupe */
+  --color-secondary: #A08064;       /* Sandy Brown */
+  --color-muted: #271E16;           /* Charcoal Cocoa */
+  --color-border: #33251A;          /* Roasted Clay Border */
+  --color-card: #1B120B;
+  --color-on-card: #F5EFEB;
+  
+  --color-success: #52B766;
+  --color-error: #E55B5B;
+  --color-warning: #F2BE54;
+}
+
+/* Automatically fallback to dark mode based on device preference unless overrides exist */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --color-primary: #DC934D;
+    --color-primary-hover: #F2A961;
+    --color-primary-light: #2D2012;
+    --color-background: #110B06;
+    --color-surface: #1B120B;
+    --color-on-surface: #F5EFEB;
+    --color-on-surface-muted: #B8A89A;
+    --color-secondary: #A08064;
+    --color-muted: #271E16;
+    --color-border: #33251A;
+    --color-card: #1B120B;
+    --color-on-card: #F5EFEB;
+    
+    --color-success: #52B766;
+    --color-error: #E55B5B;
+    --color-warning: #F2BE54;
+  }
+}
+
+/* ----------------------------------------------------
+   TAILWIND 4.0 CONFIGURATION
+   ---------------------------------------------------- */
+
+@theme {
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-light: var(--color-primary-light);
+  --color-background: var(--color-background);
+  --color-surface: var(--color-surface);
+  --color-on-surface: var(--color-on-surface);
+  --color-on-surface-muted: var(--color-on-surface-muted);
+  --color-secondary: var(--color-secondary);
+  --color-muted: var(--color-muted);
+  --color-border: var(--color-border);
+  --color-card: var(--color-card);
+  --color-on-card: var(--color-on-card);
+  
+  --color-success: var(--color-success);
+  --color-error: var(--color-error);
+  --color-warning: var(--color-warning);
+  
+  --radius-lg: var(--radius-lg);
+  --radius-md: var(--radius-md);
+  --radius-sm: var(--radius-sm);
+  
+  /* Custom micro-animations */
+  --animate-scale-in: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slide-up: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-strike-through: strikeThrough 0.3s ease-in-out forwards;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes strikeThrough {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+/* ----------------------------------------------------
+   GLOBAL BASE STYLES
+   ---------------------------------------------------- */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  margin: 0;
+  padding: 0;
+  overscroll-behavior-y: contain; /* Prevents pull-to-refresh on mobile */
+  -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea, select {
+  font-family: inherit;
+}
+
+/* Focus Ring Utility */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Custom Scrollbar for premium feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-on-surface-muted);
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

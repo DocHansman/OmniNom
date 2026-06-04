@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: omninom_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-omninom}
+      POSTGRES_USER: ${POSTGRES_USER:-omninom_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - omninom_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-omninom_user} -d ${POSTGRES_DB:-omninom}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ktor-backend:
+    build:
+      context: ./ktorBackend
+      dockerfile: Dockerfile
+    container_name: omninom_backend
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-omninom}
+      POSTGRES_USER: ${POSTGRES_USER:-omninom_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      DB_HOST: postgres
+      JWT_SECRET: ${JWT_SECRET}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      SERVER_URL: ${SERVER_URL:-http://localhost}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_ALLOWED_EMAILS: ${GOOGLE_ALLOWED_EMAILS}
+      ADMIN_EMAILS: ${ADMIN_EMAILS}
+    volumes:
+      - photo_data:/data/photos
+    networks:
+      - omninom_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:alpine
+    container_name: omninom_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - photo_data:/data/photos:ro
+      - ./frontend/dist:/usr/share/nginx/html
+    # Fix permissions for frontend files so the nginx user can read them
+    entrypoint: >
+      /bin/sh -c "
+      chmod -R 755 /usr/share/nginx/html || true &&
+      /docker-entrypoint.sh nginx -g 'daemon off;'"
+    networks:
+      - omninom_net
+    depends_on:
+      - ktor-backend
+
+  backup-cron:
+    image: postgres:16-alpine
+    container_name: omninom_backup
+    restart: unless-stopped
+    volumes:
+      - ./ktorBackend/scripts:/scripts:ro
+      - backup_data:/data/backups
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-omninom}
+      POSTGRES_USER: ${POSTGRES_USER:-omninom_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+    entrypoint: >
+      /bin/sh -c "
+      echo '0 3 * * * sh /scripts/backup.sh' > /etc/crontabs/root &&
+      echo 'Backup cron job initialized...' &&
+      crond -f -l 2"
+    networks:
+      - omninom_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+    driver: local
+  photo_data:
+    driver: local
+  backup_data:
+    driver: local
+
+networks:
+  omninom_net:
+    driver: bridge
