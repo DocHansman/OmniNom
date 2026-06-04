@@ -1,4 +1,4 @@
-# PROJECT BLUEPRINT: CookingApp 🍳 (PWA Edition v2.1)
+# PROJECT BLUEPRINT: OmniNom 🍳 (PWA Edition v2.1)
 Target Platform: Progressive Web App (Android & iOS via Browser)
 Hosting: Self-hosted Ubuntu Home Server
 Security: E2EE (Web Crypto API, AES-GCM-256)
@@ -37,7 +37,7 @@ Du agierst als Senior Full-Stack-Entwickler. Da der Entwickler über Terminal-Gr
 ## III. ARCHITEKTUR & DATEI-STRUKTUR
 
 ```
-cookingapp/
+OmniNom/
 ├── frontend/                            # React 19 + Vite PWA
 │   ├── public/
 │   │   ├── manifest.json                # PWA-Manifest (Name, Icons, Theme-Color)
@@ -418,7 +418,7 @@ CSS-Variablen in globals.css für shadcn/ui kompatibel setzen.
 
 PWA (vite.config.ts):
 - vite-plugin-pwa, Workbox Network-First für /api, Cache-First für Assets
-- manifest.json: Name "CookingApp 🍳", theme_color #C17C3A, background_color #FBF7F0, display standalone
+- manifest.json: Name "OmniNom 🍳", theme_color #C17C3A, background_color #FBF7F0, display standalone
 
 ADAPTIVE NAVIGATION (App.tsx):
 - Breakpoint 768px: unter → Bottom Nav Bar, ab → Sidebar (240px)
@@ -441,8 +441,8 @@ Erstelle das vollständige Krypto-Modul und den Onboarding-Flow.
 CRYPTO ENGINE (src/crypto/cryptoEngine.ts) – nur Web Crypto API, keine Bibliotheken:
 - deriveKeys(masterKeyHex: string): Promise<{authKey: CryptoKey, cryptoKey: CryptoKey}>
   masterKeyHex → Uint8Array → importKey(raw) → HKDF SHA-256
-  authKey: info=UTF8("CookingApp Auth"), salt=UTF8("auth_v1")
-  cryptoKey: info=UTF8("CookingApp Data"), salt=UTF8("data_v1")
+  authKey: info=UTF8("OmniNom Auth"), salt=UTF8("auth_v1")
+  cryptoKey: info=UTF8("OmniNom Data"), salt=UTF8("data_v1")
 - encrypt(cryptoKey, plaintext): Promise<string>  → Base64(12-Byte-IV + AES-GCM-256-Ciphertext)
 - decrypt(cryptoKey, ciphertext): Promise<string>
 - hashAuthKey(authKey): Promise<string>  → SHA-256 Export als Hex
